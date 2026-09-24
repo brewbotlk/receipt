@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrewBot — Official Digital Receipt</title>
+
+    <!-- Premium Fonts: Playfair for formal headers, Inter for clear data, JetBrains for monospace numbers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Coffee-inspired premium dark palette */
+            --bg-deep: #0a0807;
+            --bg-glow-1: rgba(140, 89, 57, 0.15);
+            --bg-glow-2: rgba(182, 134, 69, 0.08);
+
+            /* High-end cream paper palette */
+            --paper-main: #FCFBF8;
+            --paper-alt: #F4EFE6;
+            --border-light: #E8DFD1;
+            --border-dark: #CBBCA4;
+
+            /* Text & Accents */
+            --text-ink: #2C241E;
+            --text-muted: #7A6F65;
+            --accent-bronze: #A67644;
+            --accent-bronze-hover: #8C5F32;
+
+            /* Status Colors */
+            --success-color: #386641;
+            --success-bg: #E8F0EA;
+            --danger-color: #8C2D2D;
+            --danger-bg: #F5E6E6;
+
+            /* Shadows & Radii */
+            --shadow-premium: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
+            --radius-card: 12px;
+
+            /* Typography */
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: var(--font-sans);
+            background-color: var(--bg-deep);
+            /* Rich ambient coffee-machine glow background */
+            background-image:
+                    radial-gradient(circle at 15% 20%, var(--bg-glow-1) 0%, transparent 40%),
+                    radial-gradient(circle at 85% 80%, var(--bg-glow-2) 0%, transparent 40%);
+            color: var(--text-ink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        /* Card Frame - Designed like a formal printed docket */
+        .card {
+            background: var(--paper-main);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-premium);
+            position: relative;
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            /* Double border effect for formal look */
+            padding: 6px;
+        }
+
+        .card-inner {
+            border: 1px solid var(--border-dark);
+            border-radius: calc(var(--radius-card) - 4px);
+            background: var(--paper-main);
+            overflow: hidden;
+        }
+
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 30px 30px;
+            position: relative;
+        }
+
+        .logo-svg {
+            color: var(--accent-bronze);
+            margin-bottom: 16px;
+        }
+
+        .brand-name {
+            font-family: var(--font-serif);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-ink);
+            letter-spacing: 0.5px;
+        }
+
+        /* Divider lines */
+        .divider {
+            height: 1px;
+            background: repeating-linear-gradient(to right, transparent, transparent 4px, var(--border-dark) 4px, var(--border-dark) 8px);
+            margin: 0 30px;
+        }
+
+        /* Total Section */
+        .total-section {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .total-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .total-amount {
+            font-family: var(--font-serif);
+            font-size: 42px;
+            font-weight: 600;
+            color: var(--text-ink);
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .product-name {
+            display: inline-block;
+            font-size: 14px;
+            color: var(--accent-bronze);
+            font-weight: 500;
+            background: var(--paper-alt);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-light);
+        }
+
+        /* Details Grid */
+        .details-section {
+            padding: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-ink);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-value.mono {
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            background: var(--success-bg);
+            color: var(--success-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 2px;
+            transition: color 0.2s;
+            display: flex;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent-bronze);
+        }
+
+        /* Footer & Actions */
+        .actions-wrapper {
+            padding: 0 30px 30px;
+        }
+
+        .btn-print {
+            width: 100%;
+            background: var(--accent-bronze);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background: var(--accent-bronze-hover);
+        }
+
+        .footer {
+            background: var(--paper-alt);
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        .footer p {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Alert States (Expired/Error) */
+        .alert-card {
+            background: var(--paper-main);
+            border-radius: var(--radius-card);
+            padding: 50px 30px;
+            text-align: center;
+            border: 1px solid var(--border-dark);
+        }
+
+        .alert-icon {
+            color: var(--accent-bronze);
+            margin-bottom: 20px;
+        }
+
+        .alert-icon.error-color {
+            color: var(--danger-color);
+        }
+
+        .alert-title {
+            font-family: var(--font-serif);
+            font-size: 24px;
+            color: var(--text-ink);
+            margin-bottom: 12px;
+        }
+
+        .alert-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, var(--paper-alt) 25%, var(--border-light) 50%, var(--paper-alt) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Print Media Styles */
+        @media print {
+            body { background: none; padding: 0; color: #000; }
+            .card { box-shadow: none; padding: 0; animation: none; border: none; }
+            .card-inner { border: 1px solid #000; border-radius: 0; }
+            .actions-wrapper, .copy-btn { display: none !important; }
+            .total-amount, .brand-name { color: #000; }
+            .product-name { border: 1px solid #000; color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Loading Skeleton State -->
+    <div id="loading" class="card">
+        <div class="card-inner" style="padding: 40px 30px;">
+            <div class="skeleton" style="width: 40px; height: 40px; margin: 0 auto 20px; border-radius: 50%;"></div>
+            <div class="skeleton" style="width: 150px; height: 28px; margin: 0 auto 10px;"></div>
+            <div class="skeleton" style="width: 200px; height: 12px; margin: 0 auto 40px;"></div>
+            <div class="skeleton" style="width: 100%; height: 1px; margin-bottom: 40px;"></div>
+            <div class="skeleton" style="width: 220px; height: 48px; margin: 0 auto 20px;"></div>
+            <div class="skeleton" style="width: 120px; height: 20px; margin: 0 auto 40px; border-radius: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Active Receipt Card -->
+    <div id="receipt" class="card hidden">
+        <div class="card-inner">
+
+            <div class="header">
+                <!-- Premium Coffee SVG Icon -->
+                <svg class="logo-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                    <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                    <line x1="6" y1="2" x2="6" y2="4"></line>
+                    <line x1="10" y1="2" x2="10" y2="4"></line>
+                    <line x1="14" y1="2" x2="14" y2="4"></line>
+                </svg>
+                <div class="brand-name">BrewBot</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="total-section">
+                <div class="total-label">Amount Paid</div>
+                <div id="amount" class="total-amount">LKR 0.00</div>
+                <div id="productName" class="product-name">—</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="details-section">
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value status-badge" id="status">PAID</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span id="createdAt" class="detail-value">—</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Order Ref</span>
+                    <span class="detail-value mono">
+                        <span id="orderNo">—</span>
+                        <button class="copy-btn" title="Copy" onclick="copyField('orderNo')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Transaction ID</span>
+                    <span class="detail-value mono">
+                        <span id="transactionId">—</span>
+                        <button class="copy-btn" title="Copy" onclick="copyField('transactionId')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="actions-wrapper">
+                <button class="btn-print" onclick="window.print()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Save or Print Document
+                </button>
+            </div>
+
+            <div class="footer">
+                <p>This document serves as your official payment record.<br>Valid digitally until <span id="expiresAt" style="font-weight:600;">—</span>.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Expired State -->
+    <div id="expired" class="alert-card hidden">
+        <svg class="alert-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <h2 class="alert-title">Document Expired</h2>
+        <p class="alert-text">For security purposes, this digital receipt is only accessible for 72 hours. Please check your email for a permanent copy.</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="alert-card hidden">
+        <svg class="alert-icon error-color" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h2 class="alert-title">Record Not Found</h2>
+        <p class="alert-text">We are unable to retrieve this transaction. The link may be incorrect or the record no longer exists.</p>
+    </div>
+
+</div>
+
+<script>
+    const el = id => document.getElementById(id);
+    const show = elem => elem.classList.remove('hidden');
+    const hide = elem => elem.classList.add('hidden');
+
+    const formatAmount = val => {
+        const num = Number(val);
+        return Number.isNaN(num) ? `LKR ${val}` : `LKR ${num.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    const formatDate = val => {
+        if (!val) return '—';
+        const d = new Date(val);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString('en-LK', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const copyField = fieldId => {
+        const text = el(fieldId).textContent;
+        if (!text || text === '—') return;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = el(fieldId).nextElementSibling;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success-color)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            setTimeout(() => btn.innerHTML = originalHTML, 1500);
+        });
+    };
+
+    const getReceiptToken = () => {
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        return parts[parts.length - 1];
+    };
+
+    const loadReceipt = async () => {
+        try {
+            const token = getReceiptToken();
+            if (!token || token.endsWith('.html')) {
+                throw new Error('Invalid token');
+            }
+
+            const res = await fetch(`/api/receipts/${encodeURIComponent(token)}`);
+            const data = await res.json();
+
+            hide(el('loading'));
+
+            if (res.status === 410 || data.expired) {
+                show(el('expired'));
+                return;
+            }
+
+            if (!res.ok || !data.success || !data.receipt) {
+                show(el('error'));
+                return;
+            }
+
+            const r = data.receipt;
+            el('productName').textContent = r.productName || 'Premium Coffee Selection';
+            el('amount').textContent = formatAmount(r.amount);
+            el('orderNo').textContent = r.orderNo || '—';
+            el('transactionId').textContent = r.transactionId || '—';
+            el('status').textContent = (r.status || 'Verified').toUpperCase();
+            el('createdAt').textContent = formatDate(r.createdAt);
+            el('expiresAt').textContent = formatDate(r.expiresAt);
+
+            show(el('receipt'));
+        } catch (err) {
+            console.error('Failed to load receipt:', err);
+            hide(el('loading'));
+            show(el('error'));
+        }
+    };
+
+    // Load receipt data
+    loadReceipt();
+</script>
+
+</body>
+</html>
