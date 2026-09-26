@@ -37,7 +37,7 @@ const sendReceiptSMS = async (req, res) => {
             `${req.protocol}://${req.get('host')}`
         ).replace(/\/$/, '');
 
-        const receiptUrl = `${baseUrl}/receipt/${receipt.receiptToken}`;
+        const receiptUrl = `${baseUrl}/receipt/${receipt.orderNo}`;
 
         const message =
             `BREWBOT\n` +
