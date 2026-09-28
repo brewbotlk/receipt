@@ -36,13 +36,11 @@ const sendReceiptSMS = async (req, res) => {
             `https://receipt.brewbot.lk/receipt/${receipt.orderNo}`;
 
         const message =
-            `BREWBOT\n` +
-            `Payment Receipt\n\n` +
-            `Product: ${receipt.productName}\n` +
-            `Amount: LKR ${receipt.amount.toFixed(2)}\n` +
-            `Order No: ${receipt.orderNo}\n\n` +
+            `BREWBOT - Payment Receipt\n` +
             `Your payment was successful.\n\n` +
+
             `View Receipt:\n${receiptUrl}\n\n` +
+
             `Thank you for using BrewBot.`;
 
         const smsResult = await sendSMS({
