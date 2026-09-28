@@ -32,12 +32,8 @@ const sendReceiptSMS = async (req, res) => {
             });
         }
 
-        const baseUrl = (
-            process.env.RECEIPT_BASE_URL ||
-            `${req.protocol}://${req.get('host')}`
-        ).replace(/\/$/, '');
-
-        const receiptUrl = `${baseUrl}/receipt/${receipt.orderNo}`;
+        const receiptUrl =
+            `https://receipt.brewbot.lk/receipt/${receipt.orderNo}`;
 
         const message =
             `BREWBOT\n` +
